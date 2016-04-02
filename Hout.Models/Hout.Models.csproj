@@ -43,7 +43,6 @@
     <Compile Include="CommandResponse.cs" />
     <Compile Include="Device\BaseDevice.cs" />
     <Compile Include="Device\BaseExplorer.cs" />
-    <Compile Include="Device\DeviceEventArgs.cs" />
     <Compile Include="Device\DeviceFoundEventArgs.cs" />
     <Compile Include="Device\NewDeviceViewModel.cs" />
     <Compile Include="ParamValidation\InvalidParameterException.cs" />
