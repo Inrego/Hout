@@ -1,0 +1,54 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../hout-property/hout-property.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+
+<dom-module id="hout-device-add">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      span {
+        @apply(--paper-font-body1);
+      }
+      
+    </style>
+    <paper-input label="Name" always-float-label value="{{device.Name}}"></paper-input>
+    <template is="dom-repeat" items="{{device.PropertySpecifications}}" as="propertySpecification">
+      <hout-property href="{{propertySpecification.ElementPath}}"
+                     element-name="hout-property-string"
+                     property-spec="{{propertySpecification}}"
+                     all-properties="{{device.Properties}}"></hout-property>
+    </template>
+  </template>
+
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'hout-device-add',
+
+        properties: {
+          device: {
+            type: Object,
+            notify: true
+          }
+        },
+        _propertyValueChanged: function(obj) {
+          this.device.Properties[obj.name] = obj.value;
+          this.notifyPath('device.Properties.*');
+        },
+        _propertyReady: function(propertySpec) {
+          propertySpec.Value = this.properties[propertySpec.PropertySpecification.Name];
+        },
+        getPropertyValue: function(name) {
+          var val = this.device.Properties[name];
+          return val;
+        }
+    });
+    })();
+  </script>
+</dom-module>

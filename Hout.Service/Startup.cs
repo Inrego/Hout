@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Beginor.Owin.StaticFile;
+using Microsoft.AspNet.SignalR;
+using Microsoft.AspNet.SignalR.Hubs;
+using Microsoft.Owin;
 using Microsoft.Owin.Cors;
+using Microsoft.Owin.FileSystems;
+using Microsoft.Owin.StaticFiles;
 using Owin;
 
 namespace Hout.Service
@@ -14,15 +19,27 @@ namespace Hout.Service
         public void Configuration(IAppBuilder app)
         {
             app.UseCors(CorsOptions.AllowAll);
+            //GlobalHost.HubPipeline.AddModule(new ErrorHandlingPipelineModule());
             app.MapSignalR();
 
-            app.UseStaticFile(new StaticFileMiddlewareOptions
+            app.UseFileServer(new FileServerOptions
             {
-                RootDirectory = @".\web",
-                DefaultFile = "index.html",
-                EnableETag = true,
-                MimeTypeProvider = new MimeTypeProvider()
+                FileSystem = new PhysicalFileSystem(@".\web"),
+                RequestPath = new PathString("")
             });
+        }
+    }
+    public class ErrorHandlingPipelineModule : HubPipelineModule
+    {
+        protected override void OnIncomingError(ExceptionContext exceptionContext, IHubIncomingInvokerContext invokerContext)
+        {
+            Console.WriteLine("=> Exception " + exceptionContext.Error.Message);
+            if (exceptionContext.Error.InnerException != null)
+            {
+                Console.WriteLine("=> Inner Exception " + exceptionContext.Error.InnerException.Message);
+            }
+            base.OnIncomingError(exceptionContext, invokerContext);
+
         }
     }
 }

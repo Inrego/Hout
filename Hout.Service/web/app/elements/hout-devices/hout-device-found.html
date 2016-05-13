@@ -1,0 +1,58 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="hout-device-add.html">
+
+<dom-module id="hout-device-found">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      span {
+        @apply(--paper-font-body1);
+      }
+      paper-card {
+        width: calc(98.66% - 16px);
+        margin: 16px auto;
+      }
+    </style>
+    <paper-card heading="{{device.Name}}">
+      <div class="card-content">
+        {{device.Description}}
+      </div>
+      <div class="card-actions">
+        <a href="{{baseUrl}}devices/add" on-tap="_addDevice"><paper-button>Add</paper-button></a>
+        <paper-button on-tap="_testDevice">Test</paper-button>
+      </div>
+    </paper-card>
+  </template>
+
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'hout-device-found',
+
+        properties: {
+          device: {
+            type: Object,
+            notify: true
+          },
+          explorerType: {
+            type: String
+          }
+        },
+        _testDevice: function() {
+          app.$.signalrDevices.invoke('testDevice', this.explorerType, this.device);
+        },
+        _addDevice: function() {
+          app.addDevice = this.device;
+        }
+      });
+    })();
+  </script>
+</dom-module>

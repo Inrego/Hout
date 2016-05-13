@@ -13,6 +13,12 @@ namespace Hout.Plugins.LimitlessLED
 {
     public class LimitlessLEDWhite : BaseDevice
     {
+        public LimitlessLEDWhite()
+        {
+            State = "";
+            Brightness = 1;
+            Warmth = 1;
+        }
         private const int Port = 8899;
         private const string COMMAND_NAME_BRIGHTNESS_UP = "Brightness Up";
         private const string COMMAND_NAME_BRIGHTNESS_DOWN = "Brightness Down";
@@ -132,8 +138,9 @@ namespace Hout.Plugins.LimitlessLED
             }
         }
         #endregion CommandBytes
-        public override string Id { get; }
-        public override string Name { get; }
+
+        public override string Id { get; set; }
+        public override string Name { get; set; }
         public override string IconPath { get; }
         #region Specifications
         private static NameDescCollection<PropertySpecification> _propertySpecifications;
@@ -171,7 +178,7 @@ namespace Hout.Plugins.LimitlessLED
                 new PropertySpecification
                 {
                     Name = "Brightness",
-                    Description = "The current warmth of the bulb",
+                    Description = "The current brightness of the bulb",
                     DefaultValue = 10,
                     ReadOnly = true,
                     Hidden = true,
@@ -188,6 +195,11 @@ namespace Hout.Plugins.LimitlessLED
                 }
             });
         private static NameDescCollection<EventSpecification> _eventSpecifications;
+
+        public override string GetId()
+        {
+            return $"{GetType()}_{Address}_{Group}";
+        }
 
         public override NameDescCollection<EventSpecification> EventSpecifications
             => _eventSpecifications ?? (_eventSpecifications = new NameDescCollection<EventSpecification>
@@ -305,7 +317,7 @@ namespace Hout.Plugins.LimitlessLED
                 }
             });
         #endregion Specifications
-        public override async Task<CommandResponse> ExecuteCommand(string name, Dictionary<string, object> parameters)
+        public override async Task<CommandResponse> ExecuteCommand(string name, Dictionary<string, object> parameters = null)
         {
             switch (name)
             {
@@ -418,7 +430,15 @@ namespace Hout.Plugins.LimitlessLED
                     await SendBytes(150, CmdOn);
                     break;
                 case "Off":
-                    await SendBytes(150, CmdOff);
+                    try
+                    {
+                        await SendBytes(150, CmdOff);
+                    }
+                    catch (Exception)
+                    {
+                        
+                        throw;
+                    }
                     break;
                 case "Night":
                     await SendBytes(150, CmdNight);

@@ -1,0 +1,74 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="hout-device-found.html">
+
+<dom-module id="hout-device-explorer">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      span {
+        @apply(--paper-font-body1);
+      }
+      paper-card {
+        width: calc(98.66% - 16px);
+        margin: 16px auto;
+      }
+      #startScanBtn {
+        background: var(--accent-color);
+        color: #fff;
+      }
+      .flex {
+        @apply(--layout-horizontal);
+        @apply(--layout-center);
+      }
+    </style>
+    <div class="container flex">
+      <paper-button raised id="startScanBtn" on-tap="_startScanning">Start Scanning</paper-button>
+      <h2>{{explorer.Name}}</h2>
+    </div>
+    <template is="dom-repeat" items="{{devices}}" as="device">
+      <hout-device-found explorer-type="{{type}}" device="{{device}}"></hout-device-found>
+    </template>
+  </template>
+
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'hout-device-explorer',
+
+        properties: {
+          explorer: {
+            type: Object,
+            notify: true
+          },
+          type: {
+            type: String,
+            reflectToAttribute: true
+          },
+          devices: {
+            type: Array,
+            notify: true,
+            value: function() {
+              return new Array();
+            }
+          }
+        },
+        
+        _startScanning: function() {
+          this.devices = new Array();
+          app.$.signalrDevices.invoke('startScan', this.explorer.Type);
+        },
+        addDevice: function(device) {
+          this.push('devices', device);
+        }
+      });
+    })();
+  </script>
+</dom-module>

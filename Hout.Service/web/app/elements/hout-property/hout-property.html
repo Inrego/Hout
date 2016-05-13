@@ -1,0 +1,46 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+
+<dom-module id="hout-property">
+  <template>
+    <div id="placeholder"></div>
+  </template>
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'hout-property',
+
+        properties: {
+          href: {
+            type: String
+          },
+          elementName: {
+            type: String
+          },
+          propertySpec: {
+            type: Object,
+            notify: true
+          },
+          allProperties: {
+            type: Object
+          }
+        },
+        ready: function() {
+          this.set('propertySpec.Value', this.allProperties[this.propertySpec.PropertySpecification.Name]);
+          var that = this;
+          this.importHref(this.href);
+          var element = this.$.el = document.createElement(this.elementName);
+          element.propertySpec = this.propertySpec;
+          element.addEventListener('property-spec-changed', function() {
+            if (this.propertySpec.Value != that.allProperties[that.propertySpec.PropertySpecification.Name]) {
+              that.set('allProperties.' + that.propertySpec.PropertySpecification.Name, that.propertySpec.Value);
+            }
+          });
+          this.$.placeholder.parentNode.replaceChild(element, this.$.placeholder);
+        }
+      });
+    })();
+  </script>
+</dom-module>

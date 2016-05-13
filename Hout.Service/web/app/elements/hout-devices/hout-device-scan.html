@@ -1,0 +1,61 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="hout-device-explorer.html">
+
+<dom-module id="hout-device-scan">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      span {
+        @apply(--paper-font-body1);
+      }
+      
+    </style>
+    <template is="dom-repeat" items="{{explorers}}" as="explorer">
+      <hout-device-explorer explorer="{{explorer}}" type="{{explorer.Type}}"></hout-device-explorer>
+    </template>
+  </template>
+
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'hout-device-scan',
+
+        properties: {
+          explorers: {
+            type: Array,
+            notify: true
+          }
+        },
+        attached: function () {
+          var that = this;
+          this.async(function () {
+            that._getExplorers();
+          });
+        },
+        _getExplorers: function() {
+          var that = this;
+          app.$.signalrDevices.invoke('getExplorers', function(callback) {
+            callback.done(function(explorers) {
+              that.explorers = explorers;
+            });
+          });
+        },
+        getExplorer: function(type) {
+          return this.$$('hout-device-explorer[type="' + type + '"]');
+        },
+        addDevice: function(type, device) {
+          var expl = this.getExplorer(type);
+          if (expl) {
+            expl.addDevice(device);
+          }
+        }
+      });
+    })();
+  </script>
+</dom-module>

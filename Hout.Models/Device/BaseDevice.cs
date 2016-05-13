@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Remoting.Proxies;
 using System.Threading.Tasks;
+
 using Hout.Models.ParamValidation;
 using Hout.Models.Specifications;
 
@@ -14,11 +15,12 @@ namespace Hout.Models.Device
         {
             Properties = new PropertyCollection();
         }
-        public abstract string Id { get; }
-        public abstract string Name { get; }
+        public abstract string Id { get; set; }
+        public abstract string Name { get; set; }
         public abstract string IconPath { get; }
         public abstract NameDescCollection<PropertySpecification> PropertySpecifications { get; }
         public PropertyCollection Properties { get; set; }
+        public abstract string GetId();
         public abstract NameDescCollection<EventSpecification> EventSpecifications { get; }
         public abstract NameDescCollection<CommandSpecification> CommandSpecifications { get; }
         // TODO: Call ValidateParameters before calling ExecuteCommand

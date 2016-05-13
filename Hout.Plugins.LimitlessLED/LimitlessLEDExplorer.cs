@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -15,18 +16,20 @@ namespace Hout.Plugins.LimitlessLED
     {
         private UdpClient _udpClient;
         private bool _stop;
-        private ConcurrentBag<NewDeviceViewModel> _foundDevices; 
+        private ConcurrentBag<NewDeviceViewModel> _foundDevices;
+        public override string Name => "LimitlessLED";
+
         public override async Task StartScanning()
         {
             _stop = false;
             _foundDevices = new ConcurrentBag<NewDeviceViewModel>();
+            _udpClient = new UdpClient(new IPEndPoint(IPAddress.Any, 48899));
+            Receive();
             using (var udpBroadcast = new UdpClient())
             {
                 byte[] b = Encoding.UTF8.GetBytes("Link_Wi-Fi");
                 udpBroadcast.Send(b, b.Length, "255.255.255.255", 48899);
             }
-            _udpClient = new UdpClient(new IPEndPoint(IPAddress.Any, 48899));
-            Receive();
         }
 
         private void Receive()
@@ -35,6 +38,8 @@ namespace Hout.Plugins.LimitlessLED
         }
         private void MyReceiveCallback(IAsyncResult ar)
         {
+            if (_stop)
+                return;
             var ip = new IPEndPoint(IPAddress.Any, 48899);
             var result = _udpClient.EndReceive(ar, ref ip);
             if (!_stop)
@@ -46,20 +51,21 @@ namespace Hout.Plugins.LimitlessLED
             var isLimitlessLed = regex.IsMatch(resString);
             if (isLimitlessLed)
             {
-                var device = new NewDeviceViewModel()
+                var device = new LimitlessLEDWhite();
+                for (var i = 1; i < 5; i++)
                 {
-                    Name = "LimitlessLED",
-                    Description = "A LimitlessLED bulb Bridge located at " + ip,
-                    Properties = new Dictionary<string, object>
-                {
-                    {"Address", ip.Address.ToString()}
-                }
-                };
-                var existingDevice = _foundDevices.FirstOrDefault(d => (string) d.Properties["Address"] == ip.ToString());
-                if (existingDevice == null)
-                {
-                    _foundDevices.Add(device);
-                    OnDeviceFound?.Invoke(new DeviceFoundEventArgs(_foundDevices, device));
+                    var viewModel = new NewDeviceViewModel($"LimitlessLED Group {i}", $"A LimitlessLED bulb Bridge located at {ip}",
+                    new Dictionary<string, object>
+                    {
+                        {"Address", ip.Address.ToString()},
+                        {"Group", i }
+                    }, device.PropertySpecifications, GetType());
+                    var existingDevice = _foundDevices.FirstOrDefault(d => (string)d.Properties["Address"] == ip.ToString());
+                    if (existingDevice == null)
+                    {
+                        _foundDevices.Add(viewModel);
+                        OnDeviceFound?.Invoke(new DeviceFoundEventArgs(_foundDevices, viewModel));
+                    }
                 }
             }
         }
@@ -67,6 +73,19 @@ namespace Hout.Plugins.LimitlessLED
         {
             _stop = true;
             _udpClient.Client.Close();
+        }
+
+        public override async Task TestDevice(NewDeviceViewModel model)
+        {
+            var device = new LimitlessLEDWhite();
+            foreach (var property in model.Properties)
+            {
+                device.Properties[property.Key] = property.Value;
+            }
+            device.Group = Convert.ToSByte(device.Properties["Group"]);
+            await device.ExecuteCommand("Turn Off");
+            await Task.Delay(1000);
+            await device.ExecuteCommand("Turn On");
         }
 
         public override event DeviceFoundDelegate OnDeviceFound;

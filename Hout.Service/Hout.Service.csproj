@@ -34,11 +34,10 @@
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Beginor.Owin.StaticFile, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Beginor.Owin.StaticFile.0.3.0\lib\net45\Beginor.Owin.StaticFile.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.2.0\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
       <Private>True</Private>
@@ -55,6 +54,10 @@
       <HintPath>..\packages\Microsoft.Owin.Diagnostics.2.1.0\lib\net40\Microsoft.Owin.Diagnostics.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Owin.FileSystems, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.FileSystems.3.0.1\lib\net45\Microsoft.Owin.FileSystems.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Owin.Host.HttpListener, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.Host.HttpListener.2.1.0\lib\net45\Microsoft.Owin.Host.HttpListener.dll</HintPath>
       <Private>True</Private>
@@ -67,6 +70,10 @@
       <HintPath>..\packages\Microsoft.Owin.Security.2.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Owin.StaticFiles, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.StaticFiles.3.0.1\lib\net45\Microsoft.Owin.StaticFiles.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -75,7 +82,16 @@
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Raven.Abstractions, Version=3.0.0.0, Culture=neutral, PublicKeyToken=37f41c7f99471593, processorArchitecture=MSIL">
+      <HintPath>..\packages\RavenDB.Client.3.0.30115\lib\net45\Raven.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Raven.Client.Lightweight, Version=3.0.0.0, Culture=neutral, PublicKeyToken=37f41c7f99471593, processorArchitecture=MSIL">
+      <HintPath>..\packages\RavenDB.Client.3.0.30115\lib\net45\Raven.Client.Lightweight.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
     <Reference Include="System.Management" />
@@ -105,6 +121,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config.cs" />
+    <Compile Include="ExplorerHandling\ExplorerHandler.cs" />
+    <Compile Include="ExplorerHandling\ExplorerWrapper.cs" />
     <Compile Include="Hubs\DevicesHub.cs" />
     <Compile Include="Initializer.cs" />
     <Compile Include="ProjectInstaller.cs">
@@ -126,6 +144,11 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include=".bowerrc" />
+    <None Include="web\app\cache-config.json" />
+    <None Include="web\app\manifest.json" />
+    <None Include="bower.json" />
+    <None Include="package.json" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ProjectInstaller.resx">
@@ -143,11 +166,46 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="web\index.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include=".gitignore" />
+    <Content Include="web\app\elements\elements.html" />
+    <Content Include="web\app\elements\hout-property\hout-property-string-test.html" />
+    <Content Include="web\app\elements\hout-property\hout-property.html" />
+    <Content Include="web\app\elements\hout-devices\hout-device-found.html" />
+    <Content Include="web\app\elements\hout-devices\hout-device-explorer.html" />
+    <Content Include="web\app\elements\hout-devices\hout-device-add.html" />
+    <Content Include="web\app\elements\hout-devices\hout-device-scan.html" />
+    <Content Include="web\app\elements\hout-property\hout-property-behavior.html" />
+    <Content Include="web\app\elements\hout-property\hout-property-string.html" />
+    <Content Include="web\app\elements\my-greeting\my-greeting.html" />
+    <Content Include="web\app\elements\hout-devices\hout-device-list.html" />
+    <Content Include="web\app\elements\signalr-client-functions.html" />
+    <Content Include="web\app\elements\routing.html" />
+    <Content Include="web\app\favicon.ico" />
+    <Content Include="web\app\images\touch\apple-touch-icon.png" />
+    <Content Include="web\app\images\touch\chrome-splashscreen-icon-384x384.png" />
+    <Content Include="web\app\images\touch\chrome-touch-icon-192x192.png" />
+    <Content Include="web\app\images\touch\icon-128x128.png" />
+    <Content Include="web\app\images\touch\icon-512x512.png" />
+    <Content Include="web\app\images\touch\icon-72x72.png" />
+    <Content Include="web\app\images\touch\icon-96x96.png" />
+    <Content Include="web\app\images\touch\ms-icon-144x144.png" />
+    <Content Include="web\app\images\touch\ms-touch-icon-144x144-precomposed.png" />
+    <Content Include="web\app\index.html" />
+    <Content Include="web\app\robots.txt" />
+    <Content Include="web\app\scripts\app.js" />
+    <Content Include="web\app\styles\app-theme.html" />
+    <Content Include="web\app\styles\main.css" />
+    <Content Include="web\app\styles\shared-styles.html" />
+    <Content Include="web\app\sw-import.js" />
+    <Content Include="gulpfile.js" />
+    <Content Include="web\tasks\ensure-files.js" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

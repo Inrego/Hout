@@ -1,0 +1,10 @@
+<script>
+  (function(document) {
+    window.addEventListener('WebComponentsReady', function () {
+      var explorerEle = document.getElementsByTagName('hout-device-scan')[0];
+      app.$.signalrDevices.registerClientMethod('deviceFound', function (deviceFoundArgs) {
+        explorerEle.addDevice(deviceFoundArgs.Type, deviceFoundArgs);
+      });
+    });
+  })(document);
+</script>

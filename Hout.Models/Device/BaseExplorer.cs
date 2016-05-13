@@ -11,6 +11,9 @@ namespace Hout.Models.Device
         public delegate void DeviceFoundDelegate(DeviceFoundEventArgs args);
         public abstract Task StartScanning();
         public abstract Task StopScanning();
+        public abstract Task TestDevice(NewDeviceViewModel model);
         public abstract event DeviceFoundDelegate OnDeviceFound;
+        public abstract string Name { get; }
+        public string Type => GetType().FullName;
     }
 }

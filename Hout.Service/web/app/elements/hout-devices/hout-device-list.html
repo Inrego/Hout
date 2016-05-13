@@ -1,0 +1,67 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+
+<dom-module id="hout-device-list">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      span {
+        @apply(--paper-font-body1);
+      }
+      #addDeviceBtn {
+        position: fixed;
+        bottom: 45px;
+        right: 24px;
+      }
+    </style>
+    <template is="dom-repeat" items="{{devices}}" as="device">
+      <div>{{device.Name}}</div>
+    </template>
+    <a href="{{baseUrl}}devices/scan">
+      <paper-fab id="addDeviceBtn" icon="add"></paper-fab>
+    </a>
+  </template>
+
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'hout-device-list',
+
+        properties: {
+          devices: {
+            type: Array,
+            notify: true
+          },
+          ready: {
+            type: Boolean,
+            notify: true
+          }
+        },
+        attached: function () {
+          var that = this;
+          this.async(function () {
+            that._getDevices();
+          });
+        },
+        _getDevices: function() {
+          var that = this;
+          app.$.signalrDevices.invoke('getDevices', function(callback) {
+            callback.done(function(devices) {
+              that.devices = devices;
+              if (!that.ready) {
+                that.ready = true;
+                that.fire('devices-ready', { devices: that.devices});
+              }
+            });
+          });
+        }
+      });
+    })();
+  </script>
+</dom-module>
