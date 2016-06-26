@@ -1,0 +1,26 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../../bower_components/paper-slider/paper-slider.html">
+<link rel="import" href="hout-property-behavior.html"/>
+<dom-module id="hout-property-slider">
+  <template>
+    <label>{{propertySpec.PropertySpecification.Name}}</label>
+    <paper-slider disabled="{{propertySpec.PropertySpecification.ReadOnly}}"
+                  value="{{propertySpec.Value}}"
+                  editable
+                  min="{{propertySpec.PropertySpecification.Validator.MinValue}}"
+                  max="{{propertySpec.PropertySpecification.Validator.MaxValue}}">
+    </paper-slider>
+  </template>
+
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'hout-property-slider',
+        behaviors: [PropertyBehavior]
+      });
+    })();
+  </script>
+</dom-module>

@@ -1,6 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-styles/typography.html">
 <link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="hout-device-list-item.html" />
 
 <dom-module id="hout-device-list">
   <template>
@@ -19,7 +20,7 @@
       }
     </style>
     <template is="dom-repeat" items="{{devices}}" as="device">
-      <div>{{device.Name}}</div>
+      <hout-device-list-item device="{{device}}"></hout-device-list-item>
     </template>
     <a href="{{baseUrl}}devices/scan">
       <paper-fab id="addDeviceBtn" icon="add"></paper-fab>
@@ -43,9 +44,9 @@
             notify: true
           }
         },
-        attached: function () {
+        attached: function() {
           var that = this;
-          this.async(function () {
+          this.async(function() {
             that._getDevices();
           });
         },
@@ -56,10 +57,21 @@
               that.devices = devices;
               if (!that.ready) {
                 that.ready = true;
-                that.fire('devices-ready', { devices: that.devices});
+                that.fire('devices-ready', { devices: that.devices });
               }
             });
           });
+        },
+        addDevice: function(device) {
+          this.push('devices', device);
+        },
+        getDevice: function(id) {
+          for (var i = 0; i < this.devices.length; i++) {
+            if (this.devices[i].Id === id) {
+              return this.devices[i];
+            }
+          }
+          return null;
         }
       });
     })();

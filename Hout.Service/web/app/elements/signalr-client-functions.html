@@ -1,9 +1,13 @@
 <script>
   (function(document) {
-    window.addEventListener('WebComponentsReady', function () {
+    window.addEventListener('WebComponentsReadyOnce', function () {
       var explorerEle = document.getElementsByTagName('hout-device-scan')[0];
+      var devicesEle = document.getElementsByTagName('hout-device-list')[0];
       app.$.signalrDevices.registerClientMethod('deviceFound', function (deviceFoundArgs) {
         explorerEle.addDevice(deviceFoundArgs.Type, deviceFoundArgs);
+      });
+      app.$.signalrDevices.registerClientMethod('deviceAdded', function (addedDevice) {
+        devicesEle.addDevice(addedDevice);
       });
     });
   })(document);

@@ -2,6 +2,7 @@
 <link rel="import" href="../../bower_components/paper-styles/typography.html">
 <link rel="import" href="../hout-property/hout-property.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
 
 <dom-module id="hout-device-add">
   <template>
@@ -13,15 +14,25 @@
       span {
         @apply(--paper-font-body1);
       }
-      
+      paper-button {
+        background: var(--accent-color);
+        color: #fff;
+      }
+      #properties {
+        margin-bottom: 16px;
+      }
     </style>
-    <paper-input label="Name" always-float-label value="{{device.Name}}"></paper-input>
-    <template is="dom-repeat" items="{{device.PropertySpecifications}}" as="propertySpecification">
-      <hout-property href="{{propertySpecification.ElementPath}}"
-                     element-name="hout-property-string"
-                     property-spec="{{propertySpecification}}"
-                     all-properties="{{device.Properties}}"></hout-property>
-    </template>
+    <div id="properties">
+      <paper-input label="Name" always-float-label value="{{device.Name}}"></paper-input>
+      <template is="dom-repeat" items="{{device.PropertySpecifications}}" as="propertySpecification">
+        <hout-property element="{{propertySpecification.CustomElement}}"
+                       property-spec="{{propertySpecification}}"
+                       all-properties="{{device.Properties}}"></hout-property>
+      </template>
+    </div>
+    <a href="{{baseUrl}}devices">
+      <paper-button raised on-tap="_addDevice">Add</paper-button>
+    </a>
   </template>
 
   <script>
@@ -47,8 +58,11 @@
         getPropertyValue: function(name) {
           var val = this.device.Properties[name];
           return val;
+        },
+        _addDevice: function() {
+          app.$.signalrDevices.invoke('addDevice', this.device);
         }
-    });
+      });
     })();
   </script>
 </dom-module>

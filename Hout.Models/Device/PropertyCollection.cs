@@ -13,9 +13,11 @@ namespace Hout.Models.Device
         private const string IndexerName = "Item[]";
         private const string KeysName = "Keys";
         private const string ValuesName = "Values";
-        public PropertyCollection()
+        public PropertyCollection() : this(new Dictionary<string, object>()) { }
+
+        public PropertyCollection(Dictionary<string, object> values)
         {
-            _internalDic = new Dictionary<string, object>();
+            _internalDic = values;
         }
         private void Insert(string key, object value, bool add)
         {
@@ -85,7 +87,7 @@ namespace Hout.Models.Device
             return _internalDic.ContainsKey(key);
         }
 
-        void IDictionary<string, object>.Add(string key, object value)
+        public void Add(string key, object value)
         {
             Insert(key, value, true);
         }
@@ -112,10 +114,20 @@ namespace Hout.Models.Device
             return _internalDic.TryGetValue(key, out value);
         }
 
+        public bool ContainsKey(string key)
+        {
+            return _internalDic.ContainsKey(key);
+        }
+
         public object this[string key]
         {
             get { return _internalDic[key]; }
             set { Insert(key, value, false); }
+        }
+        public T GetValue<T>(string key)
+        {
+            var val = _internalDic[key];
+            return val is T ? (T)val : (T)Convert.ChangeType(val, typeof(T));
         }
 
         ICollection<string> IDictionary<string, object>.Keys => _internalDic.Keys;

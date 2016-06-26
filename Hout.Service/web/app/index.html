@@ -64,7 +64,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <span id="browser-sync-binding"></span>
   <!-- endbuild -->
   <template is="dom-bind" id="app">
-    <signalr-element id="signalrDevices" src="{{getSignalRPath()}}" hub-name="DevicesHub" auto-reconnect></signalr-element>
+    <signalr-element id="signalrDevices" src="{{getSignalRPath()}}" hub-name="DevicesHub" auto-reconnect logging></signalr-element>
     <paper-drawer-panel id="paperDrawerPanel">
       <!-- Drawer Scroll Header Panel -->
       <paper-scroll-header-panel drawer fixed>
@@ -155,11 +155,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             <section data-route="devices" tabindex="-1">
               <paper-material elevation="1">
-                <hout-device-list></hout-device-list>
+                <hout-device-list id="devices"></hout-device-list>
               </paper-material>
             </section>
             <section data-route="devices-scan" tabindex="-1">
               <hout-device-scan></hout-device-scan>
+            </section>
+            <section data-route="devices-details" tabindex="-1">
+              <hout-device-details></hout-device-details>
             </section>
             <section data-route="devices-add" tabindex="-1">
               <paper-material elevation="1">

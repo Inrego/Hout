@@ -32,28 +32,28 @@ namespace Hout.Plugins.LimitlessLED
         private const string COMMAND_NAME_SET_WARMTH = "Set Warmth";
         public sbyte Group
         {
-            get { return (sbyte) Properties["Group"]; }
+            get { return Properties.GetValue<sbyte>("Group"); }
             set { Properties["Group"] = value; }
         }
 
         public string Address
         {
-            get { return (string) Properties["Address"]; }
+            get { return Properties.GetValue<string>("Address"); }
             set { Properties["Address"] = value; }
         }
         public string State
         {
-            get { return (string) Properties["State"]; }
+            get { return Properties.GetValue<string>("State"); }
             set { Properties["State"] = value; }
         }
         public sbyte Brightness
         {
-            get { return (sbyte) Properties["Brightness"]; }
+            get { return Properties.GetValue<sbyte>("Brightness"); }
             set { Properties["Brightness"] = value; }
         }
         public sbyte Warmth
         {
-            get { return (sbyte) Properties["Warmth"]; }
+            get { return Properties.GetValue<sbyte>("Warmth"); }
             set { Properties["Warmth"] = value; }
         }
         #region CommandBytes

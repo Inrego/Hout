@@ -1,0 +1,38 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+
+<dom-module id="hout-device-list-item">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+      <a href$="{{baseUrl}}devices/details/{{device.Id}}">
+        <div>
+          {{device.Name}}
+        </div>
+      </a>
+  </template>
+
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'hout-device-list-item',
+
+        properties: {
+          device: {
+            type: Object,
+            notify: true
+          }
+        },
+        _getUrl: function(deviceId) {
+          return '/devices/' + deviceId;
+        }
+      });
+    })();
+  </script>
+</dom-module>

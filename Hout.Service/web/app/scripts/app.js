@@ -6,7 +6,6 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
-
 (function(document) {
   'use strict';
 
@@ -35,10 +34,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   app.addEventListener('dom-change', function() {
     console.log('Our app is ready to rock!');
   });
-  
+  app.webComponentsLoaded = false;
   // See https://github.com/Polymer/polymer/issues/1381
-  window.addEventListener('WebComponentsReady', function() {
-    // imports are loaded and elements have been registered
+  window.addEventListener('WebComponentsReady', function () {
+    if (!app.webComponentsLoaded) {
+      app.webComponentsLoaded = true;
+      window.dispatchEvent(new CustomEvent('WebComponentsReadyOnce'));
+    }
   });
 
   // Main area's paper-scroll-header-panel custom condensing transformation of

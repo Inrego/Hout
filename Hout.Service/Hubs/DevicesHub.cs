@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Hout.Models;
+using Hout.Models.Db;
 using Hout.Models.Device;
 using Hout.Plugins.LimitlessLED;
 using Hout.Service.ExplorerHandling;
@@ -17,15 +18,10 @@ namespace Hout.Service.Hubs
         () => GlobalHost.ConnectionManager.GetHubContext<DevicesHub>());
         public async Task<IEnumerable<BaseDevice>> GetDevices()
         {
-            return new List<BaseDevice>
+            using (var db = new Client())
             {
-                new LimitlessLEDWhite
-                {
-                    Address = "127.0.0.1",
-                    Group = 1,
-                    Name = "Soveværelse"
-                }
-            };
+                return await db.GetDevices();
+            }
         }
 
         public async Task<IEnumerable<object>> GetExplorers()
@@ -37,14 +33,24 @@ namespace Hout.Service.Hubs
             var explorers = explorerTypes.Select(t => (BaseExplorer) Activator.CreateInstance(t));
             return explorers;
         }
-
-        public async Task TestDevice(string typeName, NewDeviceViewModel model)
+        public async Task TestDevice(NewDeviceViewModelSimple model)
         {
-            var type = AppDomain.CurrentDomain.GetAssemblies()
-                    .SelectMany(a => a.GetTypes())
-                    .First(t => t.FullName == typeName);
+            var type = Type.GetType(model.Type);
             var explorer = (BaseExplorer) Activator.CreateInstance(type);
             await explorer.TestDevice(model);
+        }
+
+        public async Task AddDevice(NewDeviceViewModelSimple viewModel)
+        {
+            var explorerType = Type.GetType(viewModel.Type);
+            var explorer = (BaseExplorer) Activator.CreateInstance(explorerType);
+            var device = await explorer.GetDevice(viewModel);
+            BaseDevice.PopulateDefaultValues(device);
+            using (var db = new Client())
+            {
+                await db.AddOrUpdate(device);
+            }
+            Clients.All.deviceAdded(device);
         }
 
         public async Task StartScan(string type)

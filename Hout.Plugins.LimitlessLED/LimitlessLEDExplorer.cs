@@ -55,7 +55,7 @@ namespace Hout.Plugins.LimitlessLED
                 for (var i = 1; i < 5; i++)
                 {
                     var viewModel = new NewDeviceViewModel($"LimitlessLED Group {i}", $"A LimitlessLED bulb Bridge located at {ip}",
-                    new Dictionary<string, object>
+                    new PropertyCollection
                     {
                         {"Address", ip.Address.ToString()},
                         {"Group", i }
@@ -75,7 +75,7 @@ namespace Hout.Plugins.LimitlessLED
             _udpClient.Client.Close();
         }
 
-        public override async Task TestDevice(NewDeviceViewModel model)
+        public override async Task TestDevice(NewDeviceViewModelSimple model)
         {
             var device = new LimitlessLEDWhite();
             foreach (var property in model.Properties)
@@ -86,6 +86,14 @@ namespace Hout.Plugins.LimitlessLED
             await device.ExecuteCommand("Turn Off");
             await Task.Delay(1000);
             await device.ExecuteCommand("Turn On");
+        }
+
+        public override async Task<BaseDevice> GetDevice(NewDeviceViewModelSimple viewModel)
+        {
+            var device = new LimitlessLEDWhite();
+            device.Properties = viewModel.Properties;
+            device.Name = viewModel.Name;
+            return device;
         }
 
         public override event DeviceFoundDelegate OnDeviceFound;

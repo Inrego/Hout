@@ -10,7 +10,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <script src="../bower_components/page/page.js"></script>
 <script>
-  window.addEventListener('WebComponentsReady', function() {
+  window.addEventListener('WebComponentsReadyOnce', function () {
 
     // We use Page.js for routing. This is a Micro
     // client-side router inspired by the Express router
@@ -61,6 +61,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     page('/devices/scan', function () {
       app.route = 'devices-scan';
       setFocus(app.route, 'Add Device', 'Add device by brand. Tap the search button to start scanning for devices of that brand.');
+    });
+    page('/devices/details/:id', function (data) {
+      var id = data.params.id;
+      app.route = 'devices-details';
+      if (!app.$.devices.ready) {
+        app.$.devices.addEventListener('on-devices-ready', function() {
+          var device = app.$.devices.getDevice(id);
+          app.params.device = device;
+          setFocus(app.route, device.Name, device.Description);
+        });
+      } else {
+        var device = app.$.devices.getDevice(id);
+        app.params.device = device;
+        setFocus(app.route, device.Name, device.Description);
+      }
     });
 
     page('/devices/add', function () {

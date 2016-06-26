@@ -79,7 +79,17 @@ namespace Hout.Models.Device
                 select result;
             results.AddRange(validationResults);
             return results;
-        } 
+        }
+
+        public static void PopulateDefaultValues(BaseDevice device)
+        {
+            foreach (var propSpec in device.PropertySpecifications)
+            {
+                var hasValue = device.Properties.ContainsKey(propSpec.Key);
+                if (!hasValue)
+                    device.Properties[propSpec.Key] = propSpec.Value.DefaultValue;
+            }
+        }
     }
 
 }

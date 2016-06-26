@@ -14,9 +14,7 @@ namespace Hout.Service.ExplorerHandling
         private static readonly ConcurrentDictionary<Type, ExplorerWrapper> ExplorerWrappers = new ConcurrentDictionary<Type, ExplorerWrapper>();
         public static async Task StartExplorer(string typeName)
         {
-            var type = AppDomain.CurrentDomain.GetAssemblies()
-                    .SelectMany(a => a.GetTypes())
-                    .First(t => t.FullName == typeName);
+            var type = Type.GetType(typeName);
             ExplorerWrapper wrapper;
             var running = ExplorerWrappers.TryGetValue(type, out wrapper);
             if (running)

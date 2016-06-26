@@ -1,9 +1,16 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="hout-property-string.html" />
+<link rel="import" href="hout-property-slider.html" />
 
 <dom-module id="hout-property">
+  <style is="custom-style">
+    #error {
+      color: var(--error-red);
+    }
+  </style>
   <template>
-    <div id="placeholder"></div>
+    <div id="error">{{error}}</div>
   </template>
   <script>
     (function() {
@@ -13,10 +20,7 @@
         is: 'hout-property',
 
         properties: {
-          href: {
-            type: String
-          },
-          elementName: {
+          element: {
             type: String
           },
           propertySpec: {
@@ -25,20 +29,39 @@
           },
           allProperties: {
             type: Object
+          },
+          error: {
+            type: String
           }
         },
         ready: function() {
-          this.set('propertySpec.Value', this.allProperties[this.propertySpec.PropertySpecification.Name]);
-          var that = this;
-          this.importHref(this.href);
-          var element = this.$.el = document.createElement(this.elementName);
-          element.propertySpec = this.propertySpec;
-          element.addEventListener('property-spec-changed', function() {
-            if (this.propertySpec.Value != that.allProperties[that.propertySpec.PropertySpecification.Name]) {
-              that.set('allProperties.' + that.propertySpec.PropertySpecification.Name, that.propertySpec.Value);
+          if (this.propertySpec.PropertySpecification.Hidden) {
+            this.$.error.parentNode.removeChild(this.$.error);
+          } else {
+            this.set('propertySpec.Value', this.allProperties[this.propertySpec.PropertySpecification.Name]);
+            var that = this;
+            if (this.element.Path) {
+              this.importHref(this.element.Path);
             }
-          });
-          this.$.placeholder.parentNode.replaceChild(element, this.$.placeholder);
+            var element = this.$.el = document.createElement(this.element.Name);
+            element.propertySpec = this.propertySpec;
+            element.addEventListener('property-spec-changed', function () {
+              if (this.propertySpec.Value != that.allProperties[that.propertySpec.PropertySpecification.Name]) {
+                that.set('allProperties.' + that.propertySpec.PropertySpecification.Name, that.propertySpec.Value);
+                that._validateValue(element, that.propertySpec.Value);
+              }
+            });
+            this.$.error.parentNode.appendChild(element, this.$.placeholder);
+          }
+        },
+        _validateValue: function(element, value) {
+          var that = this;
+          if (this.propertySpec.PropertySpecification.Validator) {
+            app.$.signalrDevices.invoke('validateValue', this.propertySpec.PropertySpecification.Validator, value, function(validationResult) {
+              that.toggleClass('error', !validationResult.Success, element);
+              that.error = validationResult.ErrorMessage;
+            });
+          }
         }
       });
     })();

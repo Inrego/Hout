@@ -9,9 +9,17 @@ using Newtonsoft.Json;
 
 namespace Hout.Models.Device
 {
-    public class NewDeviceViewModel
+    public class NewDeviceViewModelSimple
     {
-        public NewDeviceViewModel(string name, string description, Dictionary<string, object> properties, NameDescCollection<PropertySpecification> propertySpecifications,
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public PropertyCollection Properties { get; set; }
+        public string Type { get; set; }
+    }
+    public class NewDeviceViewModel : NewDeviceViewModelSimple
+    {
+        public NewDeviceViewModel() { }
+        public NewDeviceViewModel(string name, string description, PropertyCollection properties, NameDescCollection<PropertySpecification> propertySpecifications,
             Type explorerType)
         {
             Name = name;
@@ -20,12 +28,9 @@ namespace Hout.Models.Device
             ExplorerType = explorerType;
             PropertySpecifications = propertySpecifications.Select(s => new PropertySpecViewModel(s.Value)).ToArray();
         }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public Dictionary<string, object> Properties { get; set; }
         public PropertySpecViewModel[] PropertySpecifications { get; set; }
         [JsonIgnore]
         public Type ExplorerType { get; set; }
-        public string Type => ExplorerType.FullName;
+        public new string Type => ExplorerType.AssemblyQualifiedName;
     }
 }

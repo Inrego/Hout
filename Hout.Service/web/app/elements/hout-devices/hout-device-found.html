@@ -18,6 +18,9 @@
         width: calc(98.66% - 16px);
         margin: 16px auto;
       }
+      a > paper-button {
+        color: black;
+      }
     </style>
     <paper-card heading="{{device.Name}}">
       <div class="card-content">
@@ -47,7 +50,7 @@
           }
         },
         _testDevice: function() {
-          app.$.signalrDevices.invoke('testDevice', this.explorerType, this.device);
+          app.$.signalrDevices.invoke('testDevice', this.device);
         },
         _addDevice: function() {
           app.addDevice = this.device;

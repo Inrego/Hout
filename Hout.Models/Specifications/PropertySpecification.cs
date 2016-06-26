@@ -1,5 +1,6 @@
 ﻿using System;
 using Hout.Models.ParamValidation;
+using Newtonsoft.Json;
 
 namespace Hout.Models.Specifications
 {
@@ -12,6 +13,8 @@ namespace Hout.Models.Specifications
         public Type Type { get; set; }
         public bool Hidden { get; set; }
         public IParamValidator Validator { get; set; }
+        [JsonIgnore]
+        public CustomElement CustomElement { get; set; }
 
         public virtual ValidationResult ValidateValue(object value)
         {

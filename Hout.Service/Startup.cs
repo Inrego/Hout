@@ -20,7 +20,10 @@ namespace Hout.Service
         {
             app.UseCors(CorsOptions.AllowAll);
             //GlobalHost.HubPipeline.AddModule(new ErrorHandlingPipelineModule());
-            app.MapSignalR();
+            app.MapSignalR(new HubConfiguration
+            {
+                EnableDetailedErrors = true
+            });
 
             app.UseFileServer(new FileServerOptions
             {
